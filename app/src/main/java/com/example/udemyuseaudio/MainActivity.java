@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
@@ -22,12 +23,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
-        int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        Integer maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        Integer currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
 
         player = MediaPlayer.create(getApplicationContext(), R.raw.original);
         playButton = findViewById(R.id.playButton);
         volumeBar = findViewById(R.id.volumeBar);
         volumeBar.setMax(maxVolume);
+        volumeBar.setProgress(currentVolume);
 
         volumeBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
