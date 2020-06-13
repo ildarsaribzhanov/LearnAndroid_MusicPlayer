@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
@@ -28,7 +29,6 @@ public class MainActivity extends AppCompatActivity {
 
         player = MediaPlayer.create(getApplicationContext(), R.raw.original);
         playButton = findViewById(R.id.playButton);
-
         progressBar = findViewById(R.id.volumeBar);
         progressBar.setMax(player.getDuration());
 
@@ -38,21 +38,54 @@ public class MainActivity extends AppCompatActivity {
                 progressBar.setProgress(player.getCurrentPosition());
             }
         }, 0, 1000);
+
+        progressBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser) {
+                    player.seekTo(progress);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
     }
 
     public void togglePlay(View view) {
         if (player.isPlaying()) {
-            player.pause();
-            playButton.setBackgroundResource(R.drawable.play_btn);
+            pause();
         } else {
-            player.start();
-            playButton.setBackgroundResource(R.drawable.pause_btn);
+            play();
         }
     }
 
+    private void play() {
+        player.start();
+        playButton.setBackgroundResource(R.drawable.pause_btn);
+    }
+
+    private void pause() {
+        player.pause();
+        playButton.setBackgroundResource(R.drawable.play_btn);
+    }
+
     public void prevTrack(View view) {
+        Integer progress = progressBar.getProgress() - 10000;
+        player.seekTo(progress);
+        pause();
     }
 
     public void nextTrack(View view) {
+        Integer progress = progressBar.getProgress() + 10000;
+        player.seekTo(progress);
+        pause();
     }
 }
