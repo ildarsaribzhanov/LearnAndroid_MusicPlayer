@@ -5,16 +5,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
     MediaPlayer player;
     Button playButton;
-    SeekBar volumeBar;
+    SeekBar progressBar;
     AudioManager audioManager;
 
     @Override
@@ -23,40 +25,34 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
-        Integer maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-        Integer currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
 
         player = MediaPlayer.create(getApplicationContext(), R.raw.original);
         playButton = findViewById(R.id.playButton);
-        volumeBar = findViewById(R.id.volumeBar);
-        volumeBar.setMax(maxVolume);
-        volumeBar.setProgress(currentVolume);
 
-        volumeBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        progressBar = findViewById(R.id.volumeBar);
+        progressBar.setMax(player.getDuration());
+
+        new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0);
+            public void run() {
+                progressBar.setProgress(player.getCurrentPosition());
             }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
+        }, 0, 1000);
     }
 
     public void togglePlay(View view) {
         if (player.isPlaying()) {
             player.pause();
-            playButton.setText("Play");
-        } else  {
+            playButton.setBackgroundResource(R.drawable.play_btn);
+        } else {
             player.start();
-            playButton.setText("Pause");
+            playButton.setBackgroundResource(R.drawable.pause_btn);
         }
+    }
+
+    public void prevTrack(View view) {
+    }
+
+    public void nextTrack(View view) {
     }
 }
